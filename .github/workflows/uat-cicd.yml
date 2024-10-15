@@ -9,7 +9,7 @@ jobs:
   validate_version:
     uses: ./.github/workflows/version-validation.yml  # Reuse the version validation workflow
     with:
-      branch_name: ${{ github.ref_name }}
+      branch_name: ${{ github.base_ref }}
 
   build:
     needs: validate_version
