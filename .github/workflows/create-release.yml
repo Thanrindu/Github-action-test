@@ -23,9 +23,13 @@ jobs:
 
       - name: Extract version from branch name
         id: extract_version
-        run: |
-          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -o 'release/v[0-9]\+\.[0-9]\+\.[0-9]\+' | sed 's/release\///')
+        run : |
+          VERSION=$(echo "${{ github.event.pull_request.head.ref }}" | sed -n 's|.*/\(v.*\)|\1|p')
+          echo "Extracted Release Branch Version: $VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+        # run: |
+        #   VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -o 'release/v[0-9]\+\.[0-9]\+\.[0-9]\+' | sed 's/release\///')
+        #   echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Set up Git for push access
         run: |
