@@ -7,6 +7,9 @@ on:
 
 jobs:
   validate_version:
+    steps:
+      -name : "Check branch name"
+      -run : echo "${{ github.ref_name }}"
     uses: ./.github/workflows/version-validation.yml  # Reuse the version validation workflow
     with:
       branch_name: ${{ github.ref_name }}
