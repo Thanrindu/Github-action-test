@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Fetch all commits and tags
 
       - name: Validate branch name format
         id: validate_branch
@@ -28,13 +30,18 @@ jobs:
 
       - name: Compare with latest tag
         run: |
-          LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
-          if [ -z "$LATEST_TAG" ]; then
-            echo "No previous tags found, proceeding with version ${{ env.VERSION }}."
-          else
+          # Check if there are any tags
+          if git describe --tags `git rev-list --tags --max-count=1` > /dev/null 2>&1; then
+            LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
             echo "Latest tag found: $LATEST_TAG"
+            
+            # Compare extracted version with the latest tag
             if [[ "$(printf '%s\n' "$LATEST_TAG" "${{ env.VERSION }}" | sort -V | head -n1)" != "$LATEST_TAG" ]]; then
               echo "Error: Version ${{ env.VERSION }} is not newer than the latest tag $LATEST_TAG."
               exit 1
+            else
+              echo "Proceeding with version ${{ env.VERSION }} which is newer than the latest tag $LATEST_TAG."
             fi
+          else
+            echo "No previous tags found, proceeding with version ${{ env.VERSION }}."
           fi
